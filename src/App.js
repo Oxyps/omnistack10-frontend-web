@@ -3,8 +3,6 @@ import api from './services/api';
 
 import './global.css';
 import './App.css';
-import './SideBar.css';
-import './Main.css';
 
 import DevItem from './components/DevItem';
 import DevForm from './components/DevForm';
@@ -35,7 +33,6 @@ function App() {
        	<strong>Cadastrar</strong>
         <DevForm onSubmit={handleAddDev} />
       </aside>
-
       <main>
         <ul>
           {devs.map(dev => (
