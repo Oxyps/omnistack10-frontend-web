@@ -21,6 +21,7 @@ aside {
 }
 
 aside strong {
+    height: 40px;
     font-size: 20px;
     text-align: center;
     display: block;
@@ -37,8 +38,6 @@ main ul {
     gap: 20px;
     list-style: none;
 }
-
-
 
 @media (max-width: 650px) {
     main ul {

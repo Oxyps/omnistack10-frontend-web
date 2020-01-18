@@ -37,7 +37,7 @@ form button[type=submit] {
     width: 100%;
     border: 0;
     margin-top: 30px;
-    background: #7D40E7;
+    background: #43649c;
     border-radius: 2px;
     padding: 15px 20px;
     font-size: 16px;
@@ -45,9 +45,9 @@ form button[type=submit] {
     color: #FFF;
     cursor: pointer;
 
-    transition: background 0.5s;
+    transition: width 0.5s;
 }
 
 form button[type=submit]:hover {
-    background: #6931CA;
+    background: #1e14de;
 }
