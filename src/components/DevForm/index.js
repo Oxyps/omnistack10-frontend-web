@@ -1,97 +1,98 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 
 import './styles.css';
 
-function DevForm({ onSubmit }) {
-    const [github_username, setGithubUsername] = useState('');
-    const [techs, setTechs] = useState('');
-    const [latitude, setLatitude] = useState('');
-    const [longitude, setLongitude] = useState('');
+export default class DevForm extends Component {
+  state = {
+    github_username: '',
+    techs: '',
+    longitude: '',
+    latitude: ''
+  }
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const {longitude, latitude} = position.coords;
-    
-            setLongitude(longitude);
-            setLatitude(latitude);
-          },
-          (error) => {
-            console.log(error);
-          },
-          {
-            timeout: 30000,
-          }
-        )
-    }, []);
+  getCoords = () => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const {longitude, latitude} = position.coords;
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-
-        await onSubmit({
-            github_username,
-            techs,
-            latitude,
-            longitude
-        });
-        
-        setGithubUsername('');
-        setTechs('');
-    }
-
-    return(
-        <form onSubmit={handleSubmit}>
-          <div className="input-block">
-            <label htmlFor="github_username">Usuário do GitHub</label>
-            <input
-              name="github_username"
-              id="github_username"
-              required
-              value={github_username}
-              onChange={ e => setGithubUsername(e.target.value) }
-            />
-          </div>
-
-          <div className="input-block">
-            <label htmlFor="techs">Tecnologias</label>
-            <input
-              name="techs"
-              id="techs"
-              required
-              value={techs}
-              onChange={ e => setTechs(e.target.value) }
-            />
-          </div>
-
-          <div className="input-group">
-            <div className="input-block">
-              <label htmlFor="latitude">Latitude</label>
-              <input
-                type="number"
-                name="latitude"
-                id="latitude"
-                required
-                value={latitude}
-                onChange={ e => setLatitude(e.target.value) }
-              />
-            </div>
-
-            <div className="input-block">
-              <label htmlFor="longitude">Longitude</label>
-              <input
-                type="number"
-                name="longitude"
-                id="longitude"
-                required
-                value={longitude}
-                onChange={ e => setLongitude(e.target.value) }
-              />
-            </div>
-          </div>
-
-          <button type="submit">Salvar</button>
-        </form>
+        this.setState({ longitude, latitude });
+      },
+      error => {
+        console.log(error);
+      },
+      {
+        timeout: 30000,
+      }
     );
-}
+  }
 
-export default DevForm;
+  componentDidMount() {
+    this.getCoords();
+  }
+
+  handleSubmit = async e => {
+    e.preventDefault();
+
+    const { github_username, techs, latitude, longitude } = this.state;
+
+    await this.props.onSubmit({ github_username, techs, latitude, longitude });
+
+    this.setState({ github_username: '', techs: '' });
+  }
+
+  render() {
+    return(
+      <form onSubmit={this.handleSubmit}>
+        <div className="input-block">
+          <label htmlFor="github_username">Usuário do GitHub</label>
+          <input
+            name="github_username"
+            id="github_username"
+            required
+            value={this.github_username}
+            onChange={ e => this.setState({ github_username: e.target.value }) }
+          />
+        </div>
+
+        <div className="input-block">
+          <label htmlFor="techs">Tecnologias</label>
+          <input
+            name="techs"
+            id="techs"
+            required
+            value={this.state.techs}
+            onChange={ e => this.setState({ techs: e.target.value }) }
+          />
+        </div>
+
+        <div className="input-group">
+          <div className="input-block">
+            <label htmlFor="latitude">Latitude</label>
+            <input
+              type="number"
+              name="latitude"
+              id="latitude"
+              required
+              value={this.state.latitude}
+              onChange={ e => this.setState({ latitude: e.target.value }) }
+            />
+          </div>
+
+          <div className="input-block">
+            <label htmlFor="longitude">Longitude</label>
+            <input
+              type="number"
+              name="longitude"
+              id="longitude"
+              required
+              value={this.state.longitude}
+              onChange={ e => this.setState({ longitude: e.target.value }) }
+            />
+          </div>
+        </div>
+
+        <button type="submit">Salvar</button>
+      </form>
+    );
+  }
+}

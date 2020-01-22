@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import api from './services/api';
+import { socket, connect, disconnect } from './services/socket';
 import './global.css';
 import './App.css';
 
@@ -14,24 +15,29 @@ toast.configure({
   pauseOnHover: false
 });
 
-function App() {
-  const [devs, setDevs] = useState([]);
+export default class App extends Component{
+  state = {
+    devs: []
+  }
+  
+  loadDevs = async () => {
+    const response = await api.get('/devs');
 
+    this.setState({ devs: response.data });
+  }
 
-  useEffect(() => {
-    async function loadDevs() {
-      const response = await api.get('/devs');
+  componentDidMount() {
+    this.loadDevs();
 
-      setDevs(response.data);
-    }
+    disconnect();
+    connect();
+    socket.on('new-dev', dev => this.setState({ devs: [...this.state.devs, dev] }));
+  }
 
-    loadDevs();
-  }, []);
-
-  async function handleAddDev(data) {
+  handleAddDev = async data => {
     await api.post('/devs', data)
       .then( response => {
-        setDevs([...devs, response.data]);
+        // this.setState({ devs: [...this.state.devs, response.data] });
 
         toast.success('Dev adicionado ao radar!!'); 
       })
@@ -41,22 +47,24 @@ function App() {
     ;
   }
 
-  return (
-    <div id="app">
-      <aside>
-       	<strong>Cadastrar</strong>
-        <DevForm onSubmit={handleAddDev} />
-      </aside>
+  render() {
+    const { devs } = this.state;
 
-      <main>
-        <ul>
-          {devs.map(dev => (
-            <DevItem key={dev._id} dev={dev} />
-          ))}
-        </ul>
-      </main>
-    </div>
-  );
+    return(
+      <div id="app">
+        <aside>
+          <strong>Cadastrar</strong>
+          <DevForm onSubmit={this.handleAddDev} />
+        </aside>
+
+        <main>
+          <ul>
+            {devs.map(dev => (
+              <DevItem key={dev._id} dev={dev} />
+            ))}
+          </ul>
+        </main>
+      </div>
+    )
+  }
 }
-
-export default App;
