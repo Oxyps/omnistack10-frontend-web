@@ -37,8 +37,6 @@ export default class App extends Component{
   handleAddDev = async data => {
     await api.post('/devs', data)
       .then( response => {
-        // this.setState({ devs: [...this.state.devs, response.data] });
-
         toast.success('Dev adicionado ao radar!!'); 
       })
       .catch( error => {
